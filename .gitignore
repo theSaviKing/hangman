@@ -131,7 +131,7 @@ dmypy.json
 # Replit configuration
 .replit
 
-.gitignore
 pyproject.toml
 replit.nix
 poetry.lock
+makefile
