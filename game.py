@@ -1,8 +1,12 @@
 from phrases import p as phrases
 from random import choice
-from dashing import *
+
+# from dashing import *
+from blessed import Terminal
+
 
 class Hangman:
+    width = 9
     graphics = [
         """  +---+
   |   |
@@ -60,10 +64,10 @@ class Hangman:
 
     def display(self):
         return Hangman.graphics[self.value]
-    
+
     def pdisplay(self):
         print(Hangman.graphics[self.value])
-    
+
     def __str__(self) -> str:
         return Hangman.graphics[self.value]
 
@@ -75,7 +79,8 @@ class Hangman:
 
 class Phrase:
     bank = phrases
-    def __init__(self, category = "random"):
+
+    def __init__(self, category="random"):
         if category == "random":
             self.phrase = choice(Phrase.bank[choice(list(Phrase.bank.keys()))])
         elif category not in Phrase.bank:
@@ -85,8 +90,10 @@ class Phrase:
             self.phrase = choice(Phrase.bank[category])
         self.tracker = [False for _ in self.phrase]
         self.guesses = []
+
     def __str__(self) -> str:
         return self.phrase
+
     def display(self):
         output = ""
         for i in range(len(self.phrase)):
@@ -95,8 +102,10 @@ class Phrase:
             elif self.phrase[i].isalpha():
                 output += "_" + " "
         return output.strip()
+
     def pdisplay(self):
         print(self.display())
+
     def guess(self, letter: str):
         if len(letter) != 1:
             return False
@@ -109,3 +118,23 @@ class Phrase:
             self.guesses.append(letter.casefold())
             return True
         return False
+
+
+t = Terminal()
+
+
+class Game:
+    def __init__(self):
+        self.hangman = Hangman()
+
+    def setPhrase(self, category="random"):
+        self.phrase = Phrase(category)
+
+    def setup(self):
+        pass
+
+    def display(self):
+        self.ui.display()
+
+    def start(self):
+        pass

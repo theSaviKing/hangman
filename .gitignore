@@ -1,3 +1,4 @@
 __pycache__/
 makefile
 pyproject.toml
+venv/
