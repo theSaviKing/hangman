@@ -3,6 +3,7 @@ from random import choice
 
 # from dashing import *
 from blessed import Terminal
+t = Terminal()
 
 
 class Hangman:
@@ -17,44 +18,44 @@ class Hangman:
 =========""",
         """  +---+
   |   |
-  O   |
+  #O   |
       |
       |
       |
 =========""",
         """  +---+
   |   |
-  O   |
-  |   |
+  #O   |
+  #|   |
       |
       |
 =========""",
         """  +---+
   |   |
-  O   |
- /|   |
+  #O   |
+ #/#|   |
       |
       |
 =========""",
         """  +---+
   |   |
-  O   |
- /|\  |
+  #O   |
+ #/#|#\  |
       |
       |
 =========""",
         """  +---+
   |   |
-  O   |
- /|\  |
- /    |
+  #O   |
+ #/#|#\  |
+ #/    |
       |
 =========""",
         """  +---+
   |   |
-  O   |
- /|\  |
- / \  |
+  #O   |
+ #/#|#\  |
+ #/ #\  |
       |
 =========""",
     ]
@@ -63,10 +64,20 @@ class Hangman:
         self.value = 0
 
     def display(self):
-        return Hangman.graphics[self.value]
+        output = list(self.graphics[self.value])
+        i = 0
+        while i < len(output):
+            if output[i] == "#":
+                output[i+1] = t.orangered(output[i+1])
+                output.pop(i)
+                i -= 1
+            else:
+                output[i] = t.chartreuse(output[i])
+            i += 1
+        return "".join(output)
 
     def pdisplay(self):
-        print(Hangman.graphics[self.value])
+        print(self.display())
 
     def __str__(self) -> str:
         return Hangman.graphics[self.value]
@@ -119,8 +130,8 @@ class Phrase:
             return True
         return False
 
-
-t = Terminal()
+    def width(self) -> int:
+        return len(self.display())
 
 
 class Game:
@@ -130,11 +141,21 @@ class Game:
     def setPhrase(self, category="random"):
         self.phrase = Phrase(category)
 
-    def setup(self):
-        pass
-
     def display(self):
-        self.ui.display()
+        pass
 
     def start(self):
-        pass
+        print(t.home + t.clear + t.move_y((t.height // 2) - 2))
+        print(t.center(t.khaki1("    WELCOME TO    "), fillchar="+"))
+        print(t.black_on_khaki2(t.center("HANGMAN!")))
+        print("")
+        print(t.center(t.bold("press any key to continue")))
+        with t.cbreak(), t.hidden_cursor():
+            inp = t.inkey()
+
+def main():
+    game = Game()
+    game.start()
+
+if __name__ == "__main__":
+    main()
