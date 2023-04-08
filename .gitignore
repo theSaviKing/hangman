@@ -1,6 +1,5 @@
-__pycache__/
-makefile
-pyproject.toml
-venv/
-.pre-commit-config.yaml
-.breakpoints
+*
+*.*
+!game.py
+!main.py
+!phrases.py
