@@ -3,6 +3,7 @@ from random import choice
 
 # from dashing import *
 from blessed import Terminal
+
 t = Terminal()
 
 
@@ -68,7 +69,7 @@ class Hangman:
         i = 0
         while i < len(output):
             if output[i] == "#":
-                output[i+1] = t.orangered(output[i+1])
+                output[i + 1] = t.orangered(output[i + 1])
                 output.pop(i)
                 i -= 1
             else:
@@ -145,6 +146,9 @@ class Game:
         pass
 
     def start(self):
+        self.welcome()
+
+    def welcome(self):
         print(t.home + t.clear + t.move_y((t.height // 2) - 2))
         print(t.center(t.khaki1("    WELCOME TO    "), fillchar="+"))
         print(t.black_on_khaki2(t.center("HANGMAN!")))
@@ -153,9 +157,11 @@ class Game:
         with t.cbreak(), t.hidden_cursor():
             inp = t.inkey()
 
+
 def main():
     game = Game()
     game.start()
+
 
 if __name__ == "__main__":
     main()
