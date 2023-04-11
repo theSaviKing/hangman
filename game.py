@@ -1,5 +1,6 @@
 from phrases import p as phrases
 from random import choice
+from simple_term_menu import TerminalMenu
 
 # from dashing import *
 from blessed import Terminal
@@ -136,10 +137,12 @@ class Phrase:
 
 
 class Game:
-    def __init__(self):
+    title = """ _____ _____ _____ _____ _____ _____ _____ 
+|  |  |  _  |   | |   __|     |  _  |   | |
+|     |     | | | |  |  | | | |     | | | |
+|__|__|__|__|_|___|_____|_|_|_|__|__|_|___|"""
+    def setup(self, category: str = "random"):
         self.hangman = Hangman()
-
-    def setPhrase(self, category="random"):
         self.phrase = Phrase(category)
 
     def display(self):
@@ -147,7 +150,9 @@ class Game:
 
     def start(self):
         self.welcome()
+        self.menu()
 
+    # ----------------------------------------------------------------
     def welcome(self):
         print(t.home + t.clear + t.move_y((t.height // 2) - 2))
         print(t.center(t.khaki1("    WELCOME TO    "), fillchar="+"))
@@ -156,6 +161,16 @@ class Game:
         print(t.center(t.bold("press any key to continue")))
         with t.cbreak(), t.hidden_cursor():
             inp = t.inkey()
+    def menu(self):
+        options = [
+            "[1] Play Hangman",
+            "[2] Customize",
+        ]
+        def print_menu():
+            space = t.width / len(options) + 1
+            for opt in options:
+                print(" " * space)
+                print(t.gold(opt))
 
 
 def main():
