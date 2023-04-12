@@ -169,9 +169,10 @@ class Game:
         print(t.center(t.khaki1("    WELCOME TO    "), fillchar="+"))
         print(t.black_on_khaki2("\n".join(Game.title)))
         print("")
-        print(t.center(t.bold("press any key to continue")))
         with t.cbreak(), t.hidden_cursor():
+            print(t.center(t.bold("press any key to continue")))
             inp = t.inkey()
+        print(t.move_up(3))
 
     def menu(self) -> int:
         print(
@@ -183,14 +184,16 @@ class Game:
         )
 
         def print_menu(
-            options: list, highlight: int | None = None, success: bool | None = None
+            options: list[str],
+            highlight: int | None = None,
+            success: bool | None = None,
         ):
             max_len = max(len(opt) for opt in options)
             space = (t.width - (max_len * len(options))) // (len(options) + 1)
             # print(f"{max_len = }, {space = }")
             for i in range(len(options)):
                 if highlight != i:
-                    option = options[i].split("] ")
+                    option = options[i].split(maxsplit=1)
                 print(" " * space, end="")
                 if highlight == i:
                     if success:
@@ -199,9 +202,7 @@ class Game:
                         print(t.bold_gold_reverse(options[i].center(max_len)), end="")
                 else:
                     print(
-                        f'{t.gold(f"{option[0]}] ")}{t.cornsilk(option[1])}'.center(
-                            max_len
-                        ),
+                        f"{t.gold(option[0])}{t.cornsilk(option[1])}".center(max_len),
                         end="",
                     )
             print(" " * space)
@@ -214,7 +215,19 @@ class Game:
         with t.cbreak(), t.hidden_cursor():
             print_menu(options)
             inp = t.inkey()
-            i = 0
+
+            def i(n: int) -> int:
+                """Creates a new generator"""
+                value = 0
+                while True:
+                    yield value
+                    if value == n - 1:
+                        value = 0
+                    else:
+                        value += 1
+
+            g = i(len(options))
+            i = next(g)
             keys = ["KEY_ENTER", *[str(i) for i in range(len(options))]]
 
             while inp.name not in keys and inp not in keys:
@@ -230,7 +243,7 @@ class Game:
                     print_menu(options, highlight=i, success=True)
                     return int(inp)
                 elif inp == " ":
-                    i ^= 1
+                    i = next(g)
 
 
 def main():
