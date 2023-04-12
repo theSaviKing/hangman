@@ -137,10 +137,21 @@ class Phrase:
 
 
 class Game:
-    title = """ _____ _____ _____ _____ _____ _____ _____ 
-|  |  |  _  |   | |   __|     |  _  |   | |
-|     |     | | | |  |  | | | |     | | | |
-|__|__|__|__|_|___|_____|_|_|_|__|__|_|___|"""
+    title = [
+        t.center(" ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄▄▄▄"),
+        t.center("█  █  █  ▄  █   █ █  ▂▂▂█     █  ▄  █   █ █ █"),
+        t.center("█     █     █ █ █ █  █  █ █ █ █     █ █ █ █▄█"),
+        t.center("█▄▄█▄▄█▄▄█▄▄█▄█▄▄▄█▄▄▄▄▄█▄█▄█▄█▄▄█▄▄█▄█▄▄▄█▄█"),
+        t.center(""),
+    ]
+
+    def tcenter(string: str) -> str:
+        # sourcery skip: instance-method-first-arg-name
+        strings = string.split("\n")
+        for i in range(len(strings)):
+            strings[i] = t.center(strings[i])
+        return "\n".join(strings)
+
     def setup(self, category: str = "random"):
         self.hangman = Hangman()
         self.phrase = Phrase(category)
@@ -150,27 +161,76 @@ class Game:
 
     def start(self):
         self.welcome()
-        self.menu()
+        print(self.menu())
 
     # ----------------------------------------------------------------
     def welcome(self):
-        print(t.home + t.clear + t.move_y((t.height // 2) - 2))
+        print(t.home + t.clear + t.move_y((t.height // 2) - 4))
         print(t.center(t.khaki1("    WELCOME TO    "), fillchar="+"))
-        print(t.black_on_khaki2(t.center("HANGMAN!")))
+        print(t.black_on_khaki2("\n".join(Game.title)))
         print("")
         print(t.center(t.bold("press any key to continue")))
         with t.cbreak(), t.hidden_cursor():
             inp = t.inkey()
-    def menu(self):
+
+    def menu(self) -> int:
+        print(
+            "\n"
+            + t.center(
+                t.bold(f"Choose an option. Use {t.underline_khaki('SPACE')} to toggle.")
+            ),
+            end="\n\n",
+        )
+
+        def print_menu(
+            options: list, highlight: int | None = None, success: bool | None = None
+        ):
+            max_len = max(len(opt) for opt in options)
+            space = (t.width - (max_len * len(options))) // (len(options) + 1)
+            # print(f"{max_len = }, {space = }")
+            for i in range(len(options)):
+                if highlight != i:
+                    option = options[i].split("] ")
+                print(" " * space, end="")
+                if highlight == i:
+                    if success:
+                        print(t.underline_gold(options[i].center(max_len)), end="")
+                    else:
+                        print(t.bold_gold_reverse(options[i].center(max_len)), end="")
+                else:
+                    print(
+                        f'{t.gold(f"{option[0]}] ")}{t.cornsilk(option[1])}'.center(
+                            max_len
+                        ),
+                        end="",
+                    )
+            print(" " * space)
+
         options = [
             "[1] Play Hangman",
             "[2] Customize",
+            "[3] Quit",
         ]
-        def print_menu():
-            space = t.width / len(options) + 1
-            for opt in options:
-                print(" " * space)
-                print(t.gold(opt))
+        with t.cbreak(), t.hidden_cursor():
+            print_menu(options)
+            inp = t.inkey()
+            i = 0
+            keys = ["KEY_ENTER", *[str(i) for i in range(len(options))]]
+
+            while inp.name not in keys and inp not in keys:
+                print(t.move_up(2))
+                print_menu(options, highlight=i)
+                inp = t.inkey()
+                if inp.name == "KEY_ENTER":
+                    print(t.move_up(2))
+                    print_menu(options, highlight=i, success=True)
+                    return i
+                elif inp in [str(i) for i in range(len(options))]:
+                    print(t.move_up(2))
+                    print_menu(options, highlight=i, success=True)
+                    return int(inp)
+                elif inp == " ":
+                    i ^= 1
 
 
 def main():
