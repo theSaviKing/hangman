@@ -1,4 +1,3 @@
-from game import Hangman
+from game import Game
 
-h = Hangman()
-h.display()
+(g := Game()).start()
