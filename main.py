@@ -1,4 +1,4 @@
-from game import Hangman
+from game import StickFigure
 
-h = Hangman()
+h = StickFigure()
 h.display()

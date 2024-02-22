@@ -2,13 +2,14 @@ from phrases import p as phrases
 from random import choice
 from simple_term_menu import TerminalMenu
 
-# from dashing import *
 from blessed import Terminal
 
 t = Terminal()
 
 
-class Hangman:
+class StickFigure:
+    """Displays stick figure for tracking game progress"""
+
     width = 9
     graphics = [
         """  +---+
@@ -82,7 +83,7 @@ class Hangman:
         print(self.display())
 
     def __str__(self) -> str:
-        return Hangman.graphics[self.value]
+        return StickFigure.graphics[self.value]
 
     def next(self):
         if self.value <= 5:
@@ -91,6 +92,8 @@ class Hangman:
 
 
 class Phrase:
+    """Generates and stores phrase to be guessed in game."""
+
     bank = phrases
 
     def __init__(self, category="random"):
@@ -137,6 +140,15 @@ class Phrase:
 
 
 class Game:
+    """_summary_
+
+    Returns:
+        _type_: _description_
+
+    Yields:
+        _type_: _description_
+    """
+
     title = [
         t.center(" ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄▄▄▄"),
         t.center("█  █  █  ▄  █   █ █  ▂▂▂█     █  ▄  █   █ █ █"),
@@ -153,7 +165,7 @@ class Game:
         return "\n".join(strings)
 
     def setup(self, category: str = "random"):
-        self.hangman = Hangman()
+        self.hangman = StickFigure()
         self.phrase = Phrase(category)
 
     def display(self):
@@ -161,18 +173,19 @@ class Game:
 
     def start(self):
         self.welcome()
-        print(self.menu())
+        self.menu()
 
     # ----------------------------------------------------------------
     def welcome(self):
         print(t.home + t.clear + t.move_y((t.height // 2) - 4))
         print(t.center(t.khaki1("    WELCOME TO    "), fillchar="+"))
         print(t.black_on_khaki2("\n".join(Game.title)))
+        print(t.center(t.khaki1(""), fillchar="+"))
         print("")
         with t.cbreak(), t.hidden_cursor():
             print(t.center(t.bold("press any key to continue")))
             inp = t.inkey()
-        print(t.move_up(3))
+        print(t.move_up(3) + t.move_left)
 
     def menu(self) -> int:
         print(
@@ -202,7 +215,9 @@ class Game:
                         print(t.bold_gold_reverse(options[i].center(max_len)), end="")
                 else:
                     print(
-                        f"{t.gold(option[0])}{t.cornsilk(option[1])}".center(max_len),
+                        " ".join([t.gold(option[0]), t.cornsilk(option[1])]).center(
+                            max_len
+                        ),
                         end="",
                     )
             print(" " * space)
@@ -231,19 +246,23 @@ class Game:
             keys = ["KEY_ENTER", *[str(i) for i in range(len(options))]]
 
             while inp.name not in keys and inp not in keys:
-                print(t.move_up(2))
+                print(t.move_up(2) + t.move_left)
                 print_menu(options, highlight=i)
                 inp = t.inkey()
                 if inp.name == "KEY_ENTER":
-                    print(t.move_up(2))
+                    print(t.move_up(2) + t.move_left)
                     print_menu(options, highlight=i, success=True)
                     return i
                 elif inp in [str(i) for i in range(len(options))]:
-                    print(t.move_up(2))
+                    print(t.move_up(2) + t.move_left)
                     print_menu(options, highlight=i, success=True)
                     return int(inp)
                 elif inp == " ":
                     i = next(g)
+
+    def action(self, choice: int) -> None:
+        if choice == 1:
+            pass
 
 
 def main():
