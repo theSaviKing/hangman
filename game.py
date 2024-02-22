@@ -1,6 +1,7 @@
 from phrases import p as phrases
 from random import choice
-from simple_term_menu import TerminalMenu
+
+# from simple_term_menu import TerminalMenu
 
 from blessed import Terminal
 
@@ -169,11 +170,15 @@ class Game:
         self.phrase = Phrase(category)
 
     def display(self):
-        pass
+        print(t.clear, t.home)
+        print(self.hangman.display())
 
     def start(self):
         self.welcome()
-        self.menu()
+        choice = self.menu()
+        if choice == 0:
+            self.setup()
+            self.display()
 
     # ----------------------------------------------------------------
     def welcome(self):
